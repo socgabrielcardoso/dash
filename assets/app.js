@@ -255,6 +255,25 @@
     return cell;
   }
 
+  function caseAgeLabel(record) {
+    if (record.status === "Closed") return "CLOSED";
+
+    const thresholds = {
+      Critical: 1,
+      High: 4,
+      Medium: 8,
+      Low: 24,
+      Info: 48
+    };
+
+    const ageHours = Math.max(0, (Date.now() - new Date(record.detectedAt).getTime()) / 3600000);
+    if (!Number.isFinite(ageHours)) return "AGE N/A";
+
+    const hours = Math.floor(ageHours);
+    const threshold = thresholds[record.severity] ?? 8;
+    return ageHours > threshold ? "SLA OVER · " + hours + "H" : hours + "H";
+  }
+
   function createCaseCell(record) {
     const wrap = document.createElement("div");
     wrap.className = "case-cell";
@@ -263,7 +282,7 @@
     title.textContent = record.title;
 
     const id = document.createElement("small");
-    id.textContent = record.id.slice(0, 8).toUpperCase();
+    id.textContent = record.id.slice(0, 8).toUpperCase() + " · " + caseAgeLabel(record);
 
     wrap.append(title, id);
     return wrap;
