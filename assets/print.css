@@ -1,0 +1,84 @@
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    color: #111827 !important;
+    background: #ffffff !important;
+  }
+
+  body::before,
+  .sidebar,
+  .topbar-actions,
+  .hero-actions,
+  .text-button,
+  .dialog-actions,
+  .detail-actions,
+  .toast {
+    display: none !important;
+  }
+
+  .app-shell,
+  .workspace,
+  .hero-grid,
+  .analytics-grid,
+  .metrics-grid {
+    display: block !important;
+  }
+
+  .workspace {
+    padding: 0 !important;
+  }
+
+  .topbar {
+    position: static !important;
+    min-height: auto !important;
+    border: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .view {
+    display: none !important;
+  }
+
+  .view.active {
+    display: block !important;
+  }
+
+  .hero-card,
+  .watch-card,
+  .panel,
+  .metric-card,
+  .detail-field {
+    break-inside: avoid;
+    margin: 0 0 12px !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    color: #111827 !important;
+    background: #ffffff !important;
+  }
+
+  .metrics-grid {
+    columns: 2;
+    column-gap: 12px;
+  }
+
+  table {
+    min-width: 0 !important;
+  }
+
+  th,
+  td,
+  .eyebrow,
+  .metric-label,
+  .metric-card small,
+  .queue-copy small {
+    color: #374151 !important;
+  }
+
+  .canvas-wrap,
+  .donut-layout {
+    break-inside: avoid;
+  }
+}
