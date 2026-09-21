@@ -1,0 +1,44 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: JavaScript syntax
+        run: node --check assets/app.js
+
+      - name: Manifest syntax
+        run: python -m json.tool manifest.webmanifest > /dev/null
+
+      - name: Required files
+        shell: bash
+        run: |
+          test -s index.html
+          test -s assets/styles.css
+          test -s assets/app.js
+          test -s assets/shield.svg
+          test -s manifest.webmanifest
+          test -s sw.js
+
+      - name: Security guardrails
+        shell: bash
+        run: |
+          ! grep -R -nE 'eval\(|new Function\(' assets/app.js
+          ! grep -R -nE 'http://|https://' index.html assets/app.js assets/styles.css
