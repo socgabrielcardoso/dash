@@ -1,0 +1,17 @@
+{
+  "name": "SOC DASH | Blue Team Operations",
+  "short_name": "SOC DASH",
+  "description": "Dashboard Blue Team para registro, triagem e acompanhamento de detecções e incidentes.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#050914",
+  "theme_color": "#07101d",
+  "icons": [
+    {
+      "src": "assets/shield.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
