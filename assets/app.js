@@ -1086,6 +1086,37 @@
     showToast(fresh.length + " registros demo adicionados.");
   }
 
+  async function importJsonFile(file) {
+    if (!file) return;
+
+    try {
+      const raw = await file.text();
+      const payload = JSON.parse(raw);
+      const incoming = Array.isArray(payload) ? payload : payload.records;
+
+      if (!Array.isArray(incoming)) {
+        throw new Error("Formato de backup inválido.");
+      }
+
+      const normalized = incoming.map(normalizeRecord).filter(Boolean);
+      if (!normalized.length && incoming.length) {
+        throw new Error("Nenhum registro válido encontrado.");
+      }
+
+      const byId = new Map(records.map((record) => [record.id, record]));
+      normalized.forEach((record) => byId.set(record.id, record));
+      records = Array.from(byId.values()).sort(sortNewest);
+
+      saveRecords();
+      renderAll();
+      showToast(normalized.length + " registro(s) importado(s).");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Falha ao importar backup.");
+    } finally {
+      dom.importFile.value = "";
+    }
+  }
+
   function exportJson() {
     const payload = {
       schema: "socdash.v1",
@@ -1136,6 +1167,8 @@
     dom.caseForm.addEventListener("submit", handleSubmit);
     dom.loadDemoButton.addEventListener("click", loadDemo);
     dom.exportButton.addEventListener("click", exportJson);
+    dom.importButton.addEventListener("click", () => dom.importFile.click());
+    dom.importFile.addEventListener("change", () => importJsonFile(dom.importFile.files?.[0]));
 
     [dom.caseSearch, dom.severityFilter, dom.statusFilter, dom.sourceFilter].forEach((control) => {
       control.addEventListener(control.tagName === "INPUT" ? "input" : "change", renderCases);
