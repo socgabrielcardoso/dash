@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07101d">
+  <meta name="description" content="Dashboard Blue Team para registro, triagem e acompanhamento de detecções e incidentes.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>SOC DASH | Blue Team Operations</title>
+  <link rel="icon" href="assets/shield.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="brand" href="#overview" aria-label="SOC DASH início">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span class="brand-copy">
+          <strong>SOC DASH</strong>
+          <small>BLUE TEAM OPERATIONS</small>
+        </span>
+      </a>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="overview" type="button">
+          <span class="nav-icon">01</span>
+          <span>Visão geral</span>
+        </button>
+        <button class="nav-item" data-view="cases" type="button">
+          <span class="nav-icon">02</span>
+          <span>Case register</span>
+        </button>
+        <button class="nav-item" data-view="analytics" type="button">
+          <span class="nav-icon">03</span>
+          <span>Analytics</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="system-status">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <div>
+            <strong>LOCAL MODE</strong>
+            <small>Dados no navegador</small>
+          </div>
+        </div>
+        <button id="installAppButton" class="ghost-button hidden" type="button">Instalar painel</button>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">SECURITY OPERATIONS CENTER</p>
+          <h1 id="viewTitle">Visão geral</h1>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="clock-card" aria-label="Horário local">
+            <span id="liveClock">00:00:00</span>
+            <small id="liveDate">00/00/0000</small>
+          </div>
+          <button id="exportButton" class="secondary-button" type="button">Exportar</button>
+          <button id="openCaseButton" class="primary-button" type="button">+ Novo registro</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="view-overview" class="view active" aria-labelledby="viewTitle">
+          <div class="hero-grid">
+            <article class="hero-card">
+              <div class="hero-copy">
+                <span class="signal-label"><span></span> SHIFT STATUS</span>
+                <h2>Security Ledger</h2>
+                <p>Registre detecções e incidentes, acompanhe o risco e transforme eventos isolados em contexto operacional.</p>
+                <div class="hero-actions">
+                  <button class="primary-button" data-open-case type="button">Registrar evento</button>
+                  <button id="loadDemoButton" class="secondary-button" type="button">Carregar cenário demo</button>
+                </div>
+              </div>
+              <div class="threat-gauge">
+                <div class="gauge-ring" id="riskGauge" style="--risk: 0">
+                  <div>
+                    <strong id="riskScore">0</strong>
+                    <span>RISK</span>
+                  </div>
+                </div>
+                <p id="riskLabel">Sem exposição aberta</p>
+              </div>
+            </article>
+
+            <article class="watch-card">
+              <div class="section-head compact">
+                <div>
+                  <p class="eyebrow">PRIORIDADE</p>
+                  <h3>Fila crítica</h3>
+                </div>
+                <span id="criticalQueueBadge" class="count-badge">0</span>
+              </div>
+              <div id="criticalQueue" class="critical-queue">
+                <div class="empty-mini">Nenhum caso crítico ou alto em aberto.</div>
+              </div>
+            </article>
+          </div>
+
+          <section class="metrics-grid" aria-label="Indicadores SOC">
+            <article class="metric-card">
+              <span class="metric-label">Casos abertos</span>
+              <strong id="metricOpen">0</strong>
+              <small id="metricOpenMeta">Nenhum registro ativo</small>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">Critical + High</span>
+              <strong id="metricHigh">0</strong>
+              <small id="metricHighMeta">Fila sob controle</small>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">Fechados em 7 dias</span>
+              <strong id="metricClosed">0</strong>
+              <small id="metricClosedMeta">Sem encerramentos recentes</small>
+            </article>
+            <article class="metric-card">
+              <span class="metric-label">MTTR estimado</span>
+              <strong id="metricMttr">0h</strong>
+              <small id="metricMttrMeta">Baseado em casos fechados</small>
+            </article>
+          </section>
+
+          <div class="analytics-grid">
+            <article class="panel chart-panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">ÚLTIMOS 7 DIAS</p>
+                  <h3>Volume de eventos</h3>
+                </div>
+                <span class="panel-chip">Detecções</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="trendChart" width="760" height="280" aria-label="Gráfico de volume de eventos nos últimos sete dias"></canvas>
+              </div>
+            </article>
+
+            <article class="panel severity-panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">DISTRIBUIÇÃO</p>
+                  <h3>Severidade</h3>
+                </div>
+              </div>
+              <div class="donut-layout">
+                <div class="canvas-wrap donut-wrap">
+                  <canvas id="severityChart" width="260" height="260" aria-label="Gráfico de distribuição por severidade"></canvas>
+                  <div class="donut-center">
+                    <strong id="donutTotal">0</strong>
+                    <span>TOTAL</span>
+                  </div>
+                </div>
+                <div id="severityLegend" class="legend"></div>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">ÚLTIMA ATIVIDADE</p>
+                <h3>Case register</h3>
+              </div>
+              <button class="text-button" data-go-view="cases" type="button">Ver todos</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Case</th>
+                    <th>Severidade</th>
+                    <th>Fonte</th>
+                    <th>Ativo</th>
+                    <th>Status</th>
+                    <th>Detecção</th>
+                  </tr>
+                </thead>
+                <tbody id="recentCasesBody"></tbody>
+              </table>
+              <div id="recentEmpty" class="empty-state">
+                <strong>Nenhum evento registrado</strong>
+                <p>Crie o primeiro registro para começar a formar a linha do tempo do SOC.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section id="view-cases" class="view" aria-labelledby="viewTitle">
+          <article class="panel">
+            <div class="case-toolbar">
+              <div class="search-box">
+                <label for="caseSearch">Buscar</label>
+                <input id="caseSearch" type="search" placeholder="Título, ativo, usuário, IOC, MITRE">
+              </div>
+              <div class="filter-row">
+                <label>
+                  Severidade
+                  <select id="severityFilter">
+                    <option value="all">Todas</option>
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                    <option value="Info">Info</option>
+                  </select>
+                </label>
+                <label>
+                  Status
+                  <select id="statusFilter">
+                    <option value="all">Todos</option>
+                    <option value="New">New</option>
+                    <option value="Investigating">Investigating</option>
+                    <option value="Contained">Contained</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </label>
+                <label>
+                  Fonte
+                  <select id="sourceFilter">
+                    <option value="all">Todas</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="table-wrap large">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Case</th>
+                    <th>Tipo</th>
+                    <th>Severidade</th>
+                    <th>Fonte</th>
+                    <th>Ativo</th>
+                    <th>MITRE</th>
+                    <th>Status</th>
+                    <th>Detecção</th>
+                  </tr>
+                </thead>
+                <tbody id="allCasesBody"></tbody>
+              </table>
+              <div id="allCasesEmpty" class="empty-state">
+                <strong>Nenhum resultado</strong>
+                <p>Ajuste os filtros ou registre um novo evento.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section id="view-analytics" class="view" aria-labelledby="viewTitle">
+          <div class="analytics-grid">
+            <article class="panel chart-panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">TELEMETRIA</p>
+                  <h3>Eventos por fonte</h3>
+                </div>
+              </div>
+              <div id="sourceBars" class="bar-list"></div>
+            </article>
+
+            <article class="panel chart-panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">MITRE ATT&CK</p>
+                  <h3>Táticas mais vistas</h3>
+                </div>
+              </div>
+              <div id="mitreBars" class="bar-list"></div>
+            </article>
+          </div>
+
+          <div class="analytics-grid">
+            <article class="panel chart-panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">STATUS</p>
+                  <h3>Fluxo operacional</h3>
+                </div>
+              </div>
+              <div id="statusFlow" class="status-flow"></div>
+            </article>
+
+            <article class="panel chart-panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">HIGIENE</p>
+                  <h3>Qualidade dos registros</h3>
+                </div>
+              </div>
+              <div class="quality-score">
+                <strong id="qualityScore">0%</strong>
+                <div class="quality-track"><span id="qualityBar"></span></div>
+                <p id="qualityText">Adicione dados para medir a completude.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="caseDialog" class="case-dialog" aria-labelledby="caseDialogTitle">
+    <form id="caseForm" method="dialog" novalidate>
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">NOVO REGISTRO</p>
+          <h2 id="caseDialogTitle">Adicionar ao Security Ledger</h2>
+        </div>
+        <button class="icon-button" id="closeCaseButton" type="button" aria-label="Fechar">×</button>
+      </div>
+
+      <div class="form-grid">
+        <label class="span-2">
+          Título
+          <input id="caseTitle" name="title" maxlength="100" required placeholder="Ex: PowerShell suspeito em endpoint">
+        </label>
+
+        <label>
+          Tipo
+          <select id="caseType" name="type" required>
+            <option value="Detection">Detection</option>
+            <option value="Incident">Incident</option>
+            <option value="Hunt">Hunt</option>
+            <option value="Case">Case</option>
+          </select>
+        </label>
+
+        <label>
+          Severidade
+          <select id="caseSeverity" name="severity" required>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+            <option value="Info">Info</option>
+          </select>
+        </label>
+
+        <label>
+          Fonte
+          <select id="caseSource" name="source" required>
+            <option>Microsoft Sentinel</option>
+            <option>Microsoft Defender</option>
+            <option>Entra ID</option>
+            <option>Firewall</option>
+            <option>Email Security</option>
+            <option>EDR</option>
+            <option>SIEM</option>
+            <option>Manual Hunt</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label>
+          Status
+          <select id="caseStatus" name="status" required>
+            <option value="New">New</option>
+            <option value="Investigating">Investigating</option>
+            <option value="Contained">Contained</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </label>
+
+        <label>
+          Ativo
+          <input id="caseAsset" name="asset" maxlength="80" placeholder="HOSTNAME ou IP">
+        </label>
+
+        <label>
+          Identidade
+          <input id="caseIdentity" name="identity" maxlength="100" placeholder="usuario@empresa.com">
+        </label>
+
+        <label>
+          MITRE ATT&CK
+          <select id="caseMitre" name="mitre">
+            <option value="">Não classificado</option>
+            <option>Initial Access</option>
+            <option>Execution</option>
+            <option>Persistence</option>
+            <option>Privilege Escalation</option>
+            <option>Defense Evasion</option>
+            <option>Credential Access</option>
+            <option>Discovery</option>
+            <option>Lateral Movement</option>
+            <option>Collection</option>
+            <option>Command and Control</option>
+            <option>Exfiltration</option>
+            <option>Impact</option>
+          </select>
+        </label>
+
+        <label>
+          Detectado em
+          <input id="caseDetectedAt" name="detectedAt" type="datetime-local" required>
+        </label>
+
+        <label class="span-2">
+          IOC ou evidência
+          <input id="caseIoc" name="ioc" maxlength="180" placeholder="Hash, domínio, IP, processo, URL ou evidência principal">
+        </label>
+
+        <label>
+          Analista
+          <input id="caseAnalyst" name="analyst" maxlength="80" placeholder="Nome ou handle">
+        </label>
+
+        <label class="span-2">
+          Notas
+          <textarea id="caseNotes" name="notes" maxlength="1200" rows="4" placeholder="Contexto, hipótese, ação tomada e próximos passos"></textarea>
+        </label>
+      </div>
+
+      <p id="formError" class="form-error" role="alert"></p>
+
+      <div class="dialog-actions">
+        <button id="cancelCaseButton" class="secondary-button" type="button">Cancelar</button>
+        <button class="primary-button" type="submit">Salvar registro</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="detailDialog" class="detail-dialog" aria-labelledby="detailTitle">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">CASE DETAIL</p>
+        <h2 id="detailTitle">Registro</h2>
+      </div>
+      <button id="closeDetailButton" class="icon-button" type="button" aria-label="Fechar">×</button>
+    </div>
+    <div id="detailContent"></div>
+  </dialog>
+
+  <input id="importFile" class="visually-hidden" type="file" accept="application/json">
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
