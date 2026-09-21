@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">SOC DASH</title>
+  <defs>
+    <linearGradient id="g" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#62b5ff"/>
+      <stop offset="1" stop-color="#34d8ff"/>
+    </linearGradient>
+  </defs>
+  <path fill="#07101d" d="M32 2 57 12v18c0 15.1-9.8 26.1-25 32C16.8 56.1 7 45.1 7 30V12L32 2Z"/>
+  <path fill="none" stroke="url(#g)" stroke-width="4" stroke-linejoin="round" d="M32 7 52 15v15c0 12.1-7.3 21.1-20 26.7C19.3 51.1 12 42.1 12 30V15L32 7Z"/>
+  <path fill="url(#g)" d="M21 21h23v6H28v5h13v6H28v5h16v6H21V21Z"/>
+</svg>
