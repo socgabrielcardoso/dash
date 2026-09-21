@@ -882,6 +882,22 @@
     showToast("Registro excluído.");
   }
 
+  function findPotentialDuplicate(title, asset, detectedAt) {
+    const normalizedTitle = title.toLowerCase();
+    const normalizedAsset = sanitizeText(asset, 80).toLowerCase();
+    const candidateTime = new Date(detectedAt).getTime();
+    const windowMs = 24 * 60 * 60 * 1000;
+
+    return records.find((record) => {
+      if (record.status === "Closed") return false;
+      if (record.title.toLowerCase() !== normalizedTitle) return false;
+      if ((record.asset || "").toLowerCase() !== normalizedAsset) return false;
+
+      const delta = Math.abs(new Date(record.detectedAt).getTime() - candidateTime);
+      return Number.isFinite(delta) && delta <= windowMs;
+    });
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
     dom.formError.textContent = "";
@@ -899,6 +915,16 @@
       dom.formError.textContent = "Informe uma data de detecção válida.";
       $("#caseDetectedAt").focus();
       return;
+    }
+
+    const duplicate = findPotentialDuplicate(title, $("#caseAsset").value, detectedValue);
+    if (duplicate) {
+      const proceed = window.confirm(
+        "Possível duplicidade detectada com o case \"" + duplicate.title
+        + "\" (" + duplicate.id.slice(0, 8).toUpperCase()
+        + "). Deseja registrar mesmo assim?"
+      );
+      if (!proceed) return;
     }
 
     const now = new Date().toISOString();
