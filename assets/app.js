@@ -1136,6 +1136,45 @@
     showToast("Exportação JSON concluída.");
   }
 
+  function exportCsv() {
+    const columns = [
+      ["id", "Case ID"],
+      ["title", "Title"],
+      ["type", "Type"],
+      ["severity", "Severity"],
+      ["source", "Source"],
+      ["status", "Status"],
+      ["asset", "Asset"],
+      ["identity", "Identity"],
+      ["mitre", "MITRE ATT&CK"],
+      ["detectedAt", "Detected At"],
+      ["ioc", "IOC"],
+      ["analyst", "Analyst"],
+      ["notes", "Notes"]
+    ];
+
+    const escapeCsv = (value) => {
+      const text = String(value ?? "");
+      return '"' + text.replace(/"/g, '""') + '"';
+    };
+
+    const rows = [
+      columns.map(([, label]) => escapeCsv(label)).join(","),
+      ...records.map((record) => columns.map(([key]) => escapeCsv(record[key])).join(","))
+    ];
+
+    const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "socdash-cases-" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+    showToast("Exportação CSV concluída.");
+  }
+
   function updateClock() {
     const now = new Date();
     dom.liveClock.textContent = new Intl.DateTimeFormat("pt-BR", {
@@ -1169,6 +1208,7 @@
     dom.exportButton.addEventListener("click", exportJson);
     dom.importButton.addEventListener("click", () => dom.importFile.click());
     dom.importFile.addEventListener("change", () => importJsonFile(dom.importFile.files?.[0]));
+    dom.csvButton.addEventListener("click", exportCsv);
 
     [dom.caseSearch, dom.severityFilter, dom.statusFilter, dom.sourceFilter].forEach((control) => {
       control.addEventListener(control.tagName === "INPUT" ? "input" : "change", renderCases);
