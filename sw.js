@@ -1,11 +1,14 @@
-const CACHE_NAME = "socdash-static-v1";
+const CACHE_NAME = "socdash-static-v2";
 const STATIC_ASSETS = [
   "./",
   "./index.html",
   "./assets/styles.css",
+  "./assets/print.css",
   "./assets/app.js",
+  "./assets/shortcuts.js",
   "./assets/shield.svg",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./404.html"
 ];
 
 self.addEventListener("install", (event) => {
