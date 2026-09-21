@@ -40,6 +40,8 @@
     formError: $("#formError"),
     loadDemoButton: $("#loadDemoButton"),
     exportButton: $("#exportButton"),
+    importButton: $("#importButton"),
+    csvButton: $("#csvButton"),
     importFile: $("#importFile"),
     toast: $("#toast"),
     liveClock: $("#liveClock"),
