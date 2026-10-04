@@ -1,14 +1,14 @@
-# Project Review
+# Revisão do SOC DASH
 
-Before publishing dashboard changes:
-- synthetic data only;
-- no secret or token;
-- accessible UI;
-- local storage behavior documented;
-- export reviewed;
-- statuses and severities consistent;
-- incident examples remain safe;
-- documentation updated;
-- static checks pass.
+Antes de publicar uma alteração:
 
-This keeps SOC DASH credible as a defensive portfolio project.
+- usar somente dados fictícios;
+- remover tokens e informações sensíveis;
+- testar navegação e armazenamento local;
+- conferir exportação;
+- revisar nomes de status e severidade;
+- validar exemplos de incidentes;
+- rodar o smoke check;
+- conferir se a documentação ainda corresponde à interface.
+
+Se uma mudança altera o fluxo de um caso, ela também precisa aparecer na documentação.
