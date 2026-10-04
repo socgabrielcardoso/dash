@@ -1,17 +1,22 @@
-# Project Profile
+# SOC DASH — notas do projeto
 
-**SOC DASH** is a Blue Team operations dashboard for registering, triaging and tracking detections and incidents in a structured local workspace.
+## Finalidade
 
-## What this project demonstrates
-- Incident-triage workflow design
-- Security-event prioritization and risk context
-- Local evidence handling and export
-- Security-focused frontend architecture
-- Operational thinking for SOC workflows
+Representar um fluxo simples de investigação de segurança sem depender de um SIEM.
 
-## Portfolio signal
-This repository translates SOC concepts into an operational interface, demonstrating how detections become cases, context and documented decisions.
+O dashboard permite tratar um alerta como caso: registrar entidades, adicionar evidências, ajustar severidade, documentar decisões e acompanhar o fechamento.
 
-**Domain:** SOC, Blue Team, Incident Response  
-**Execution model:** Local web application  
-**Status:** Active technical portfolio project
+## Dados tratados
+
+- título e origem do caso;
+- severidade e prioridade;
+- usuários, hosts, IPs e outros indicadores;
+- evidências;
+- notas;
+- ações de contenção;
+- resolução;
+- métricas básicas.
+
+## Escopo
+
+Projeto local para estudo de SOC e Incident Response. Não substitui as ferramentas usadas em ambiente corporativo.
