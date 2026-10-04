@@ -1,18 +1,40 @@
 # SOC DASH
 
-Dashboard local de Blue Team para registrar, priorizar e acompanhar detecções e incidentes com contexto operacional.
+Dashboard local para organizar **alertas, investigações e incidentes de segurança**.
 
-## Objetivo
-Transformar sinais de segurança em casos estruturados, mantendo severidade, evidência, decisão e histórico de tratamento em uma interface simples.
+O projeto nasceu da necessidade de representar um fluxo simples de SOC: registrar um caso, adicionar contexto, guardar evidências, definir severidade, acompanhar ações e fechar com uma decisão clara.
 
-## Foco
-- SOC triage
-- Incident Response
-- Detection tracking
-- Evidence handling
-- Risk context
-- Operational metrics
+## Funcionalidades
 
-O projeto é um laboratório local de portfólio e não substitui SIEM, SOAR ou plataforma corporativa de incidentes.
+- cadastro e acompanhamento de casos
+- severidade e prioridade
+- entidades envolvidas
+- registro de evidências
+- notas de investigação
+- status de contenção e resolução
+- métricas operacionais
+- exportação de informações
+- funcionamento local
 
-Consulte `docs/professional/` para workflow, modelo de caso, severidade e critérios de evidência.
+## Estrutura
+
+- `index.html` — aplicação
+- `assets/` — recursos da interface
+- `scripts/` — verificações auxiliares
+- `docs/` — documentação técnica e fluxo de incidentes
+- `sw.js` — service worker
+- `manifest.webmanifest` — configuração web
+
+## Uso
+
+O SOC DASH é uma aplicação web local e não precisa de SIEM ou backend para funcionar.
+
+Existe um smoke check em:
+
+```text
+scripts/smoke-check.mjs
+```
+
+## Limite do projeto
+
+Não é um substituto para Sentinel, Defender, Splunk, SOAR ou ferramenta de ticketing. O objetivo é estudar organização de casos e raciocínio operacional sem depender de um ambiente corporativo real.
